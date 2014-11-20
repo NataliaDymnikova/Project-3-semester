@@ -12,12 +12,10 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play"
         android:id="@+id/buttonPlay"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:clickable="true"
-        android:enabled="true"
+        android:text="Play"
         android:textSize="50dp"
         android:textStyle="bold"
         android:onClick="onClickPlay"/>
