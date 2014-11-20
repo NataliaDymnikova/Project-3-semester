@@ -20,14 +20,11 @@ public class PagePlay extends android.view.View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (num <= 1) {
-            lines.add(new Point(0, 0));
-            num++;
-            lines.add(new Point(canvas.getWidth() / 2, canvas.getHeight() / 2));
-            num++;
-        }
         for (int i = 0; i < num - 1; i++) {
-            canvas.drawLine(lines.get(i).x, lines.get(i).y, lines.get(i + 1).x, lines.get(i + 1).y
+            canvas.drawLine(canvas.getWidth() / 2 + lines.get(i).x
+                    , canvas.getHeight() / 2 + lines.get(i).y
+                    , canvas.getWidth() / 2 + lines.get(i + 1).x
+                    , canvas.getHeight() / 2 + lines.get(i + 1).y
                     , new Paint(Color.BLACK));
         }
     }
