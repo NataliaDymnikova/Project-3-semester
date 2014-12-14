@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="app_name">shagalka</string>
-   <string name="action_settings">Settings</string>
-    <string name="title_activity_page_play">PagePlay</string>
-    <string name="controller_play">ControllerPlay</string>
-
-</resources>
