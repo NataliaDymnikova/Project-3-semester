@@ -25,14 +25,14 @@ public class PagePlay extends android.view.View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        scale = multyTouch.Scale();
-        corner = multyTouch.Angle();
-        translate = multyTouch.Translate();
 
         if (num > 0)
-            canvas.drawText(lines.get(num - 1).toString(), 10, 10, new Paint(Color.BLACK));
-        canvas.drawText(translate.toString(), 10, 30, new Paint(Color.BLACK));
-        canvas.drawText(scale + "", 10, 50, new Paint(Color.BLACK));
+            canvas.drawText("translate" + lines.get(num - 1).x + "." + lines.get(num - 1).y
+                    , 10, 10, new Paint(Color.BLACK));
+        canvas.drawText("translate: " + translate.x + "." + translate.y
+                , 10, 30, new Paint(Color.BLACK));
+        canvas.drawText("corner: " + corner, 10, 50, new Paint(Color.BLACK));
+        canvas.drawText("scale: " + scale, 10, 70, new Paint(Color.BLACK));
 
         canvas.translate(translate.x, translate.y);
         canvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
@@ -67,6 +67,11 @@ public class PagePlay extends android.view.View {
         this.translate = translate;
     }
 
+    /// Set translate, corner, scale to begin.
+    public void SetToZeroChange() {
+        multyTouch.setToZero();
+    }
+
     /// List of line's points.
     private List<Point> lines;
     /// Number of points.
@@ -78,5 +83,5 @@ public class PagePlay extends android.view.View {
     /// Scale canvas.
     private float scale;
     /// Multy touch - translate, scale, rotate.
-    MultyTouch multyTouch;
+    private MultyTouch multyTouch;
 }

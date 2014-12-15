@@ -17,31 +17,29 @@ public class MultyTouch implements View.OnTouchListener {
     public boolean onTouch(View view, MotionEvent event) {
         // событие
         int actionMask = event.getActionMasked();
-        // индекс касания
-        int pointerIndex = event.getActionIndex();
         // число касаний
         int pointerCount = event.getPointerCount();
 
         switch (actionMask) {
             case MotionEvent.ACTION_DOWN: // первое касание
-                beginX[0] = event.getX(event.getPointerId(0));
-                beginY[0] = event.getY(event.getPointerId(0));
+                beginX[0] = event.getX(0);
+                beginY[0] = event.getY(0);
             case MotionEvent.ACTION_POINTER_DOWN: // последующие касания
                 if (pointerCount == 2){
-                    beginX[1] = event.getX(event.getPointerId(1));
-                    beginY[1] = event.getY(event.getPointerId(1));
+                    beginX[1] = event.getX(1);
+                    beginY[1] = event.getY(1);
                 }
                 break;
 
             case MotionEvent.ACTION_POINTER_UP: // прерывания касаний
                 beginX = endX.clone();
                 beginY = endY.clone();
-                return false;
+                break;
 
             case MotionEvent.ACTION_MOVE: // движение
                 if (pointerCount <= 2) {
-                    endX[0] = event.getX(event.getPointerId(0));
-                    endY[0] = event.getY(event.getPointerId(0));
+                    endX[0] = event.getX(0);
+                    endY[0] = event.getY(0);
                     // if 1 touch.
                     if (pointerCount == 1) {
                         Point temp = Translate(beginX[0], beginY[0], endX[0], endY[0]);
@@ -49,13 +47,11 @@ public class MultyTouch implements View.OnTouchListener {
                                 , translate.y + temp.y / coeffTranslate);
                     }
                     // if multy touch.
-                    if (pointerCount == 2) {
-                        endX[1] = event.getX(event.getPointerId(1));
-                        endY[1] = event.getY(event.getPointerId(1));
+                     else if (pointerCount == 2) {
+                        endX[1] = event.getX(1);
+                        endY[1] = event.getY(1);
                         dAngle += Rotate(beginX, beginY, endX, endY);
                         dScale *= Scale(beginX, beginY, endX, endY);
-                        if (dScale <= (float)0.1)
-                            dScale = (float)0.1;
                     }
                 }
 
@@ -72,7 +68,9 @@ public class MultyTouch implements View.OnTouchListener {
     /// Return angle.
     public float Angle() {
         if (dAngle > 360)
-            dAngle -= 360 * ((int)dAngle / 360);
+            dAngle -= (360 * (int)(dAngle / 360));
+        if (dAngle < 0)
+            dAngle += (360 * (int)(dAngle / 360));
         return dAngle;
     }
 
@@ -89,6 +87,21 @@ public class MultyTouch implements View.OnTouchListener {
     /// Return vector of translate.
     public Point Translate() {
         return translate;
+    }
+
+    /// Set all settings to zero.
+    public void setToZero()
+    {
+        translate.set(0,0);
+        dAngle = -90;
+        dScale = 1;
+        beginX[0] = beginX[1] = 0;
+        beginY[0] = beginY[1] = 0;
+        endX[0] = endX[1] = 0;
+        endY[0] = endY[1] = 0;
+        pagePlay.setChangeTranslate(Translate());
+        pagePlay.setChangeCorner(Angle());
+        pagePlay.setChangeScale(Scale());
     }
 
     // Calculate translate between two points.
@@ -113,8 +126,12 @@ public class MultyTouch implements View.OnTouchListener {
         if (temp == 0)
             return 0;
 
-        return (float)Math.toDegrees(Math.acos(((x0[1] - x0[0]) * (x1[1] - x1[0])
-            + (y0[1] - y0[0]) *  (y1[1] - y1[0])) / temp));
+        float result = ((x0[1] - x0[0]) * (x1[1] - x1[0])
+                + (y0[1] - y0[0]) *  (y1[1] - y1[0])) / temp;
+        if (result >= -1 && result <= 1)
+            return (float)Math.toDegrees(Math.acos(result));
+
+        return 0;
     }
 
     // Calculate scale.
