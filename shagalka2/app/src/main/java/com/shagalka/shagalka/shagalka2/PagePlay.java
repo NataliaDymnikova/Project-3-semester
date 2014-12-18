@@ -16,32 +16,55 @@ public class PagePlay extends android.view.View {
         super(context);
         lines = new ArrayList<Point>();
         num = 0;
-        corner = -90;
+        corner = 0;
         scale = 1;
         translate = new Point(0,0);
         multyTouch = new MultyTouch(this);
         this.setOnTouchListener(multyTouch);
+        coefTrans = 9;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
 
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(40);
         if (num > 0)
-            canvas.drawText("translate" + lines.get(num - 1).x + "." + lines.get(num - 1).y
-                    , 10, 10, new Paint(Color.BLACK));
-        canvas.drawText("translate: " + translate.x + "." + translate.y
-                , 10, 30, new Paint(Color.BLACK));
-        canvas.drawText("corner: " + corner, 10, 50, new Paint(Color.BLACK));
-        canvas.drawText("scale: " + scale, 10, 70, new Paint(Color.BLACK));
+            canvas.drawText("Ваше положение: " + lines.get(num - 1).x + "," + lines.get(num - 1).y
+                    , 10, 30, paint);
+        canvas.drawText("Масштаб: " + scale, 10, 60, paint);
+        canvas.drawText("Шаги: " + steps, 10, 90, paint);
 
-        canvas.translate(translate.x, translate.y);
+        float translateX = (float)(translate.x * Math.cos(corner) + translate.y * Math.sin(corner));
+        float translateY = (float)(-translate.x * Math.sin(corner) + translate.y * Math.cos(corner));
+
         canvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
+        canvas.translate(translate.x, translate.y);
         canvas.rotate(corner);
         canvas.scale(scale, scale, 0, 0);
 
+        // Сетка.
+        int width = 100;
+        int beginX = (int)((-canvas.getWidth() * 2 - translateX) / scale);
+        int beginY = (int)((-canvas.getHeight() * 2 - translateY) / scale);
+        int endX = (int)((canvas.getWidth() * 2 - translateX) / scale);
+        int endY = (int)((canvas.getHeight() * 2 - translateY) / scale);
+        beginX -= beginX % width;
+        beginY -= beginY % width;
+        endX -= endX % width;
+        endY -= endY % width;
+        for (int i = beginX - width; i <= endX + width; i += width)
+            for (int j = beginY - width; j <= endY + width; j +=width) {
+                canvas.drawLine(i, beginY - width, i, endY + width, paint);
+                canvas.drawLine(beginX - width, j, endX + width, j, paint);
+            }
+
+        paint.setStrokeWidth(3);
+
         for (int i = 0; i < num - 1; i++) {
             canvas.drawLine(lines.get(i).x, lines.get(i).y
-                    , lines.get(i + 1).x, lines.get(i + 1).y, new Paint(Color.BLACK));
+                    , lines.get(i + 1).x, lines.get(i + 1).y, paint);
         }
     }
 
@@ -64,7 +87,7 @@ public class PagePlay extends android.view.View {
 
     /// Set change of translate.
     public void setChangeTranslate(Point translate) {
-        this.translate = translate;
+        this.translate.set(translate.x / (int)coefTrans, translate.y / (int)coefTrans);
     }
 
     /// Set translate, corner, scale to begin.
@@ -72,16 +95,31 @@ public class PagePlay extends android.view.View {
         multyTouch.setToZero();
     }
 
-    /// List of line's points.
+    public void ToLastPlace() {
+        if (num == 0)
+            multyTouch.setToZero();
+        Point temp = lines.get(num - 1);
+        multyTouch.SetTranslate(new Point(-temp.x * (int)coefTrans, -temp.y * (int)coefTrans));
+    }
+
+    public void setNumberOfSteps(int steps) {
+      this.steps = steps;
+    }
+
+    // List of line's points.
     private List<Point> lines;
-    /// Number of points.
+    // Number of points.
     private int num;
-    /// Corner to rotate canvas.
+    // Corner to rotate canvas.
     private float corner;
-    /// Translate canvas.
+    // Translate canvas.
     private Point translate;
-    /// Scale canvas.
+    // Scale canvas.
     private float scale;
-    /// Multy touch - translate, scale, rotate.
+    // Multy touch - translate, scale, rotate.
     private MultyTouch multyTouch;
+    // Coefficient to translate, scale and rotate;
+    private float coefTrans;
+    // Number os steps.
+    private int steps;
 }

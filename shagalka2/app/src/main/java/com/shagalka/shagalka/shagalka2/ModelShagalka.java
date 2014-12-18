@@ -28,6 +28,7 @@ public class ModelShagalka {
         valuesMagnet = new float[3];
         valuesResult = new float[3];
 
+        steps = 0;
         activ = activity;
         this.pagePlay = pagePlay;
     }
@@ -48,8 +49,7 @@ public class ModelShagalka {
                         getDeviceOrientation();
                         getCurrentSpeed();
                         pagePlay.setNewPoint(GetNewPoint());
-                        //activ.setContentView(pagePlay);
-
+                        pagePlay.setNumberOfSteps(steps);
                     }
                 });
             }
@@ -70,19 +70,40 @@ public class ModelShagalka {
     }
 
     /// Обновляет перемещение, скорость.
-    public void getCurrentSpeed() {
+    private void getCurrentSpeed() {
+        setToAccelerationValues();
         for (int i = 0; i < 3; i++) {
-            if (Math.abs(valuesLinAccel[i]) > 0.5) {
-                acceleration[i] = valuesLinAccel[i] * (float) Math.sin(valuesResult[(i + 1) % 3]);
-                average[i] += countAverage(speed[i], acceleration[i]);
-                speed[i] += acceleration[i] * period / 1000;
-            }
-
-            else if (Math.abs(speed[i]) > 0.4) {
-                average[i] += speed[i] * period / 1000;
-            }
+            average[i] += countAverage(speed[i], acceleration[i]);
+            speed[i] += acceleration[i] * period / 1000;
         }
+
+        if (Math.abs(acceleration[0]) < 0.1)
+            acceleration[0] = 0;
+        if (Math.abs(acceleration[1]) < 0.1)
+            acceleration[1] = 0;
+
+        CountSteps();
     }
+
+    private void setToAccelerationValues() {
+
+        float cosA = (float) Math.cos(valuesResult[1]);
+        float cosB = (float) Math.cos(valuesResult[2]);
+        float cosC = (float) Math.cos(valuesResult[0]);
+        float sinA = (float) Math.sin(valuesResult[1]);
+        float sinB = (float) Math.sin(valuesResult[2]);
+        float sinC = (float) Math.sin(valuesResult[0]);
+        float x = valuesLinAccel[0];
+        float y = valuesLinAccel[1];
+        float z = valuesLinAccel[2];
+
+        acceleration[0] = x * cosB * cosC - y * (sinA * sinB * cosC + cosA * sinC)
+                + z * (cosA * sinB * cosC - sinA * sinC);
+        acceleration[1] = x * cosB * sinC - y * (sinA * sinB * sinC - cosA * cosC)
+                + z * (cosA * sinB * sinC + sinA * cosC);
+        acceleration[2] = -x * sinB - y * sinA * cosB + z * cosA * cosB;
+    }
+
 
     /// Get new point.
     public Point GetNewPoint() {
@@ -119,6 +140,15 @@ public class ModelShagalka {
         }
     };
 
+    private void CountSteps() {
+        if (!counter && acceleration[2] > accZ)
+            counter = true;
+        else if (counter && acceleration[2] < -accZ) {
+            counter = false;
+            steps++;
+        }
+    }
+
     private float[] valuesAccel;
     private float[] valuesLinAccel;
     private float[] valuesMagnet;
@@ -135,6 +165,14 @@ public class ModelShagalka {
     private int period = 100;
 
     private Timer timer;
-    Game activ;
-    PagePlay pagePlay;
+    // Количество шагов.
+    private int steps;
+    // Чувствительность шагомера.
+    private float accZ = 1;
+    private boolean counter = false;
+
+    /// Parent game for sensors.
+    private Game activ;
+    /// Listener of changes.
+    private PagePlay pagePlay;
 }

@@ -9,7 +9,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="StateBegin"
+        android:text="(0,0)"
         android:id="@+id/buttonStateBegin"
         android:onClick="onClickBeginState"
         android:clickable="true"
@@ -26,5 +26,27 @@
         android:layout_below="@+id/buttonStateBegin"
         android:layout_centerHorizontal="true"
         android:id="@+id/viewLayout"></FrameLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ваше положение"
+        android:id="@+id/buttonToYourPlace"
+        android:layout_above="@+id/viewLayout"
+        android:layout_toStartOf="@+id/buttonStateBegin"
+        android:onClick="onClickYourPlace"
+        android:layout_alignParentEnd="false"
+        android:layout_marginRight="5dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сброс"
+        android:id="@+id/buttonClean"
+        android:layout_toStartOf="@+id/buttonToYourPlace"
+        android:onClick="onCLickClean"
+        android:layout_above="@+id/viewLayout"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="5dp" />
 
 </RelativeLayout>

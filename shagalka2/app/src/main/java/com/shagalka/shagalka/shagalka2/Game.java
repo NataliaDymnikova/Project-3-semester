@@ -2,6 +2,7 @@ package com.shagalka.shagalka.shagalka2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Layout;
@@ -35,14 +36,33 @@ public class Game extends Activity {
         pagePlay.SetToZeroChange();
     }
 
+    public void onClickYourPlace(android.view.View view) {
+        pagePlay.ToLastPlace();
+    }
+
+   public void onCLickClean(android.view.View view) {
+       gameLayout.removeAllViews();
+       pagePlay = new PagePlay(this);
+       gameLayout.addView(pagePlay);
+
+       model = new ModelShagalka(this, pagePlay);
+       model.onResume();
+   }
+
     private void FirstPage() {
         setContentView(R.layout.activite_first_page);
         buttonGo = (Button) findViewById(R.id.buttonGo);
+        buttonGo.setBackgroundColor(Color.argb(200, 140, 5, 185));
     }
 
     private void PlayPage() {
 
         buttonBeginState = (Button) findViewById(R.id.buttonStateBegin);
+        buttonToTourPlace = (Button) findViewById(R.id.buttonToYourPlace);
+        buttonClean = (Button) findViewById(R.id.buttonClean);
+        buttonBeginState.setBackgroundColor(Color.argb(170, 10, 50, 180));
+        buttonToTourPlace.setBackgroundColor(Color.argb(170, 10, 50, 200));
+        buttonClean.setBackgroundColor(Color.argb(170, 10, 50, 190));
 
         pagePlay = new PagePlay(this);
         gameLayout = (FrameLayout)findViewById(R.id.viewLayout);
@@ -79,6 +99,10 @@ public class Game extends Activity {
     private Button buttonGo;
     // Button on play layout for setting to zero translate, corer and scale.
     private Button buttonBeginState;
+    //
+    private Button buttonToTourPlace;
+    //
+    private Button buttonClean;
     // Play layout.
     private FrameLayout gameLayout;
 }
